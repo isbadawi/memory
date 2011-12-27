@@ -20,3 +20,10 @@ SDL_Surface **load_images(char** filenames, int num_images) {
         result[i] = load_image(filenames[i]);
     return result;
 }
+
+void draw(SDL_Surface* src, SDL_Surface* dest, int x, int y) {
+    SDL_Rect offset;
+    offset.x = x;
+    offset.y = y;
+    SDL_BlitSurface(src, NULL, dest, &offset);
+}

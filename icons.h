@@ -4,5 +4,6 @@
 #include<SDL/SDL.h>
 
 SDL_Surface** load_images(char** filenames, int num_images);
+void draw(SDL_Surface* dest, SDL_Surface* src, int x, int y);
 
 #endif
