@@ -1,6 +1,7 @@
-#include "icons.h"
 #include <stdlib.h>
 #include <SDL/SDL_image.h>
+#include "icons.h"
+#include "constants.h"
 
 SDL_Surface *load_image(char *filename) {
     SDL_Surface* temp = NULL;
@@ -13,11 +14,27 @@ SDL_Surface *load_image(char *filename) {
     return result;
 }
 
-SDL_Surface **load_images(char** filenames, int num_images) {
-    SDL_Surface** result = malloc(num_images * sizeof(SDL_Surface*));
+char **get_icon_filenames(char *filename) {
+    char **result = malloc(NUM_ICONS * sizeof(char*));
+    FILE* fp = fopen(filename, "r");
     int i;
-    for (i = 0; i < num_images; ++i)
+    for (i = 0; i < NUM_ICONS; i++) {
+        result[i] = malloc(40);
+        fgets(result[i], 40, fp);
+        result[i][strlen(result[i]) - 1] = '\0';
+    }
+    return result;
+} 
+
+SDL_Surface **load_images(void) {
+    char** filenames = get_icon_filenames("icons.txt");
+    SDL_Surface** result = malloc(NUM_ICONS * sizeof(SDL_Surface*));
+    int i;
+    for (i = 0; i < NUM_ICONS; ++i) {
         result[i] = load_image(filenames[i]);
+        free(filenames[i]);
+    }
+    free(filenames);
     return result;
 }
 

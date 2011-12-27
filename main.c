@@ -4,23 +4,7 @@
 #include<SDL/SDL.h>
 
 #include "constants.h"
-#include "icons.h"
-
-char **get_icon_filenames(char *filename) {
-    char **result = malloc(NUM_ICONS * sizeof(char*));
-    FILE* fp = fopen(filename, "r");
-    int i;
-    for (i = 0; i < NUM_ICONS; i++) {
-        result[i] = malloc(40);
-        fgets(result[i], 40, fp);
-        result[i][strlen(result[i]) - 1] = '\0';
-    }
-    return result;
-}
-
-int randint(int low, int high) {
-    return rand() % (high - low) + low;
-}
+#include "game.h"
 
 int main(int argc, char *argv[])
 {
@@ -28,33 +12,26 @@ int main(int argc, char *argv[])
     SDL_Init(SDL_INIT_EVERYTHING);
     atexit(SDL_Quit);
     SDL_SetVideoMode(SCREEN_SIZE, SCREEN_SIZE, SCREEN_BPP, SDL_SWSURFACE);
-    char **filenames = get_icon_filenames("icons.txt");
-    SDL_Surface **icons = load_images(filenames, NUM_ICONS);
 
-    SDL_Surface* grid[NUM_ICONS*2];
-    int i;
-    for (i = 0; i < NUM_ICONS; ++i)
-        grid[i] = grid[i+NUM_ICONS] = icons[i];
-    for (i = NUM_ICONS * 2 - 1; i > 0; --i) {
-        int j = randint(0, i);
-        SDL_Surface* temp = grid[j];
-        grid[j] = grid[i];
-        grid[i] = temp;
-    }
-    
+    Tile* grid = init_game_grid();
+
     SDL_Surface *screen = SDL_GetVideoSurface();
     Uint32 WHITE = SDL_MapRGB(screen->format, 255, 255, 255);
 
     int done = 0;
+    SDL_Event e;
     while (!done) {
+        while (SDL_PollEvent(&e)) {
+            switch (e.type) {
+                case SDL_QUIT:
+                    done = 1;
+            }
+        }
         SDL_FillRect(screen, NULL, WHITE);
-        int row, col;
-        for (row = 0; row < ICONS_PER_LINE; ++row)
-            for (col = 0; col < ICONS_PER_LINE; ++col)
-                draw(grid[row * ICONS_PER_LINE + col], 
-                     screen, 
-                     col * ICON_SIZE,
-                     row * ICON_SIZE);
+        int i;
+        for (i = 0; i < NUM_ICONS * 2; ++i)
+            if (grid[i].visible)
+                draw(grid[i].icon, screen, grid[i].x, grid[i].y);
         SDL_Flip(screen);
     }
 }
