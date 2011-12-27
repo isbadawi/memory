@@ -7,7 +7,7 @@ SDL_Surface *load_image(char *filename) {
     SDL_Surface* result = NULL;
     temp = IMG_Load(filename);
     if (temp != NULL) {
-        result = SDL_DisplayFormat(temp);
+        result = SDL_DisplayFormatAlpha(temp);
         SDL_FreeSurface(temp);
     }
     return result;
