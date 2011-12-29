@@ -9,6 +9,15 @@
 int tile_clicked;
 int wait;
 
+Uint32 remove_tiles(Uint32 interval, void *state) {
+    Tile** s = (Tile**)state;
+    s[0]->removed = 1;
+    s[1]->removed = 1;
+    wait = 0;
+    tile_clicked = -1;
+    return 0;
+}
+
 Uint32 resume_play(Uint32 interval, void *state) {
     Tile** s = (Tile**)state;
     s[0]->covered = 1;
@@ -53,10 +62,11 @@ int main(int argc, char *argv[])
                         tile_clicked = index;
                         grid[index].covered = 0;
                     } else if (index != tile_clicked) {
-                        if (tiles_match(&grid[index], &grid[tile_clicked])) {
-                            grid[index].removed = 1;
-                            grid[tile_clicked].removed = 1;
-                            tile_clicked = -1;
+                        if (tiles_match(grid + index, grid + tile_clicked)) {
+                            grid[index].covered = 0;
+                            wait = 1;
+                            Tile* s[2] = {grid + index, grid + tile_clicked};
+                            SDL_AddTimer(1000, remove_tiles, s);
                         }
                         else {
                             grid[index].covered = 0;
@@ -76,9 +86,9 @@ int main(int argc, char *argv[])
             if (grid[i].removed)
                 continue;
             if (grid[i].covered) 
-                draw_cover(&grid[i], screen);
+                draw_cover(grid + i, screen);
             else
-                draw(&grid[i], screen);
+                draw(grid + i, screen);
         }
         SDL_Flip(screen);
     }
