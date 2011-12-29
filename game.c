@@ -42,3 +42,7 @@ int get_tile_clicked(int x, int y) {
     int col = x / ICON_SIZE;
     return row * ICONS_PER_LINE + col;
 }
+
+int tiles_match(Tile *t1, Tile *t2) {
+    return t1->icon == t2->icon;
+}

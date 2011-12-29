@@ -6,6 +6,23 @@
 #include "constants.h"
 #include "game.h"
 
+int tile_clicked;
+int wait;
+
+typedef struct {
+    Tile *t1;
+    Tile *t2;
+} wait_state;
+
+Uint32 resume_play(Uint32 interval, void *state) {
+    wait_state s = *((wait_state*)state);
+    s.t1->covered = 1;
+    s.t2->covered = 1;
+    wait = 0;
+    tile_clicked = -1;
+    return 0;
+}
+
 int main(int argc, char *argv[])
 {
     srand(time(0));
@@ -19,7 +36,9 @@ int main(int argc, char *argv[])
     Uint32 WHITE = SDL_MapRGB(screen->format, 255, 255, 255);
 
     int done = 0;
+    wait = 0;
     SDL_Event event;
+    tile_clicked = -1;
     while (!done) {
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
@@ -28,12 +47,34 @@ int main(int argc, char *argv[])
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 if (event.button.button == SDL_BUTTON_LEFT) {
+                    if (wait)
+                        break;
                     int x = event.button.x;
                     int y = event.button.y;
                     int index = get_tile_clicked(x, y);
-                    if (!grid[index].removed && grid[index].covered)
+                    if (grid[index].removed)
+                        break;
+                    if (tile_clicked == -1) {
+                        tile_clicked = index;
                         grid[index].covered = 0;
+                    } else if (index != tile_clicked) {
+                        if (tiles_match(&grid[index], &grid[tile_clicked])) {
+                            grid[index].removed = 1;
+                            grid[tile_clicked].removed = 1;
+                            tile_clicked = -1;
+                        }
+                        else {
+                            grid[index].covered = 0;
+                            wait = 1;
+                            wait_state s;
+                            s.t1 = &grid[index];
+                            s.t2 = &grid[tile_clicked];
+                            SDL_AddTimer(1000, resume_play, &s);
+                        }
+
+                    } 
                 }
+                break;
             }
         }
         SDL_FillRect(screen, NULL, WHITE);
