@@ -2,9 +2,11 @@
 #include<stdlib.h>
 #include<time.h>
 #include<SDL/SDL.h>
+#include<SDL/SDL_image.h>
 
 #include "constants.h"
 #include "game.h"
+#include "icons.h"
 
 Tile* previous_tile;
 int wait;
@@ -33,7 +35,8 @@ int main(int argc, char *argv[])
     SDL_Init(SDL_INIT_EVERYTHING);
     atexit(SDL_Quit);
     SDL_SetVideoMode(SCREEN_SIZE, SCREEN_SIZE, SCREEN_BPP, SDL_SWSURFACE);
-    SDL_WM_SetCaption("Memory game", NULL);
+    SDL_WM_SetCaption("Memory game", "Memory game");
+    SDL_WM_SetIcon(load_image("icons/32/Chip 100_32x32-32.png"), NULL);
 
     Tile* grid = init_game_grid();
 
