@@ -9,15 +9,10 @@
 int tile_clicked;
 int wait;
 
-typedef struct {
-    Tile *t1;
-    Tile *t2;
-} wait_state;
-
 Uint32 resume_play(Uint32 interval, void *state) {
-    wait_state s = *((wait_state*)state);
-    s.t1->covered = 1;
-    s.t2->covered = 1;
+    Tile** s = (Tile**)state;
+    s[0]->covered = 1;
+    s[1]->covered = 1;
     wait = 0;
     tile_clicked = -1;
     return 0;
@@ -66,10 +61,8 @@ int main(int argc, char *argv[])
                         else {
                             grid[index].covered = 0;
                             wait = 1;
-                            wait_state s;
-                            s.t1 = &grid[index];
-                            s.t2 = &grid[tile_clicked];
-                            SDL_AddTimer(1000, resume_play, &s);
+                            Tile* s[2] = {grid + index, grid + tile_clicked};
+                            SDL_AddTimer(1000, resume_play, s);
                         }
 
                     } 
