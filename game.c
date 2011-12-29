@@ -27,9 +27,10 @@ Tile* init_game_grid(void) {
     for (row = 0; row < ICONS_PER_LINE; ++row)
         for (col = 0; col < ICONS_PER_LINE; ++col) {
             int index = row*ICONS_PER_LINE + col;
-            grid[index].visible = 1;
-            grid[index].x = row * ICON_SIZE;
-            grid[index].y = col * ICON_SIZE;
+            grid[index].covered = 1;
+            grid[index].removed = 0;
+            grid[index].x = col * ICON_SIZE;
+            grid[index].y = row * ICON_SIZE;
         }
 
     free(icons);
@@ -37,7 +38,7 @@ Tile* init_game_grid(void) {
 }
 
 int get_tile_clicked(int x, int y) {
-    int row = x / ICON_SIZE;
-    int col = y / ICON_SIZE;
+    int row = y / ICON_SIZE;
+    int col = x / ICON_SIZE;
     return row * ICONS_PER_LINE + col;
 }

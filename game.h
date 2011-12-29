@@ -6,7 +6,8 @@
 typedef struct {
     int x;
     int y;
-    int visible;
+    int covered;
+    int removed;
     SDL_Surface* icon;
 } Tile;
 

@@ -2,8 +2,10 @@
 #define __icons_h
 
 #include<SDL/SDL.h>
+#include "game.h"
 
 SDL_Surface** load_images();
-void draw(SDL_Surface* dest, SDL_Surface* src, int x, int y);
+void draw(Tile* t, SDL_Surface* dest);
+void draw_cover(Tile* t, SDL_Surface* dest);
 
 #endif

@@ -31,15 +31,21 @@ int main(int argc, char *argv[])
                     int x = event.button.x;
                     int y = event.button.y;
                     int index = get_tile_clicked(x, y);
-                    grid[index].visible = 1;
+                    if (!grid[index].removed && grid[index].covered)
+                        grid[index].covered = 0;
                 }
             }
         }
         SDL_FillRect(screen, NULL, WHITE);
         int i;
-        for (i = 0; i < NUM_ICONS * 2; ++i)
-            if (grid[i].visible)
-                draw(grid[i].icon, screen, grid[i].x, grid[i].y);
+        for (i = 0; i < NUM_ICONS * 2; ++i) {
+            if (grid[i].removed)
+                continue;
+            if (grid[i].covered) 
+                draw_cover(&grid[i], screen);
+            else
+                draw(&grid[i], screen);
+        }
         SDL_Flip(screen);
     }
 }
