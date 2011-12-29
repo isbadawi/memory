@@ -19,12 +19,20 @@ int main(int argc, char *argv[])
     Uint32 WHITE = SDL_MapRGB(screen->format, 255, 255, 255);
 
     int done = 0;
-    SDL_Event e;
+    SDL_Event event;
     while (!done) {
-        while (SDL_PollEvent(&e)) {
-            switch (e.type) {
-                case SDL_QUIT:
-                    done = 1;
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+            case SDL_QUIT:
+                done = 1;
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    int x = event.button.x;
+                    int y = event.button.y;
+                    int index = get_tile_clicked(x, y);
+                    grid[index].visible = 1;
+                }
             }
         }
         SDL_FillRect(screen, NULL, WHITE);

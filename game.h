@@ -11,5 +11,6 @@ typedef struct {
 } Tile;
 
 Tile* init_game_grid(void);
+int get_tile_clicked(int x, int y);
 
 #endif

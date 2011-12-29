@@ -4,4 +4,4 @@ syntax: glob
 *.orig
 *.txt
 icons
-a.out
+memory
