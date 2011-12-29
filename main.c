@@ -6,7 +6,7 @@
 #include "constants.h"
 #include "game.h"
 
-int tile_clicked;
+Tile* previous_tile;
 int wait;
 
 Uint32 remove_tiles(Uint32 interval, void *state) {
@@ -14,7 +14,7 @@ Uint32 remove_tiles(Uint32 interval, void *state) {
     s[0]->removed = 1;
     s[1]->removed = 1;
     wait = 0;
-    tile_clicked = -1;
+    previous_tile = NULL;
     return 0;
 }
 
@@ -23,7 +23,7 @@ Uint32 resume_play(Uint32 interval, void *state) {
     s[0]->covered = 1;
     s[1]->covered = 1;
     wait = 0;
-    tile_clicked = -1;
+    previous_tile = NULL;
     return 0;
 }
 
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     int done = 0;
     wait = 0;
     SDL_Event event;
-    tile_clicked = -1;
+    previous_tile = NULL;
     while (!done) {
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
@@ -55,26 +55,20 @@ int main(int argc, char *argv[])
                         break;
                     int x = event.button.x;
                     int y = event.button.y;
-                    int index = get_tile_clicked(x, y);
-                    if (grid[index].removed)
+                    Tile *clicked_tile = &grid[get_clicked_tile(x, y)];
+                    if (clicked_tile->removed)
                         break;
-                    if (tile_clicked == -1) {
-                        tile_clicked = index;
-                        grid[index].covered = 0;
-                    } else if (index != tile_clicked) {
-                        if (tiles_match(grid + index, grid + tile_clicked)) {
-                            grid[index].covered = 0;
-                            wait = 1;
-                            Tile* s[2] = {grid + index, grid + tile_clicked};
+                    if (previous_tile == NULL) {
+                        previous_tile = clicked_tile;
+                        clicked_tile->covered = 0;
+                    } else if (previous_tile != clicked_tile) {
+                        clicked_tile->covered = 0;
+                        wait = 1;
+                        Tile* s[2] = {previous_tile, clicked_tile};
+                        if (tiles_match(previous_tile, clicked_tile))
                             SDL_AddTimer(1000, remove_tiles, s);
-                        }
-                        else {
-                            grid[index].covered = 0;
-                            wait = 1;
-                            Tile* s[2] = {grid + index, grid + tile_clicked};
+                        else
                             SDL_AddTimer(1000, resume_play, s);
-                        }
-
                     } 
                 }
                 break;

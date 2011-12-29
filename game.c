@@ -37,7 +37,7 @@ Tile* init_game_grid(void) {
     return grid;
 }
 
-int get_tile_clicked(int x, int y) {
+int get_clicked_tile(int x, int y) {
     int row = y / ICON_SIZE;
     int col = x / ICON_SIZE;
     return row * ICONS_PER_LINE + col;
