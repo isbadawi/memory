@@ -1,6 +1,5 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include<math.h>
 #include "game.h"
 #include "constants.h"
 #include "icons.h"
@@ -12,14 +11,27 @@ int randint(int low, int high) {
 grid_t* init_game_grid(difficulty_t level) {
     int i;
     int row, col;
-    SDL_Surface **icons = load_images();
+    SDL_Surface **icons;
     grid_t* grid = malloc(sizeof(*grid));
-    grid->tiles = malloc(2*NUM_ICONS*sizeof(*(grid->tiles)));
-    grid->num_tiles = 2*NUM_ICONS;
-    grid->tiles_per_row = sqrt(grid->num_tiles);
-    for (i = 0; i < NUM_ICONS; ++i)
-        grid->tiles[i].icon = grid->tiles[i+NUM_ICONS].icon = icons[i];
-    for (i = NUM_ICONS * 2 - 1; i > 0; --i) {
+    switch (level) {
+        case EASY:
+            grid->num_tiles = 16;
+            grid->tiles_per_row = 4;
+            break;
+        case MEDIUM:
+            grid->num_tiles = 36;
+            grid->tiles_per_row = 6;
+            break;
+        case HARD:
+            grid->num_tiles = 64;
+            grid->tiles_per_row = 8;
+            break;
+    }
+    icons = load_images(grid->num_tiles / 2);
+    grid->tiles = malloc(grid->num_tiles * sizeof(*(grid->tiles)));
+    for (i = 0; i < grid->num_tiles/2; ++i)
+        grid->tiles[i].icon = grid->tiles[i+grid->num_tiles/2].icon = icons[i];
+    for (i = grid->num_tiles - 1; i > 0; --i) {
         int j = randint(0, i);
         tile_t temp = grid->tiles[j];
         grid->tiles[j] = grid->tiles[i];

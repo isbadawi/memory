@@ -15,11 +15,11 @@ SDL_Surface *load_image(char *filename) {
     return result;
 }
 
-char **get_icon_filenames(char *filename) {
-    char **result = malloc(NUM_ICONS * sizeof(char*));
+char **get_icon_filenames(char *filename, int how_many) {
+    char **result = malloc(how_many * sizeof(char*));
     FILE* fp = fopen(filename, "r");
     int i;
-    for (i = 0; i < NUM_ICONS; i++) {
+    for (i = 0; i < how_many; i++) {
         result[i] = malloc(40);
         fgets(result[i], 40, fp);
         result[i][strlen(result[i]) - 1] = '\0';
@@ -27,11 +27,11 @@ char **get_icon_filenames(char *filename) {
     return result;
 } 
 
-SDL_Surface **load_images(void) {
-    char** filenames = get_icon_filenames("icons.txt");
-    SDL_Surface** result = malloc(NUM_ICONS * sizeof(SDL_Surface*));
+SDL_Surface **load_images(int how_many) {
+    char** filenames = get_icon_filenames("icons.txt", how_many);
+    SDL_Surface** result = malloc(how_many * sizeof(SDL_Surface*));
     int i;
-    for (i = 0; i < NUM_ICONS; ++i) {
+    for (i = 0; i < how_many; ++i) {
         result[i] = load_image(filenames[i]);
         free(filenames[i]);
     }

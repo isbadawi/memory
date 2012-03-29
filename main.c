@@ -66,15 +66,15 @@ int main(int argc, char *argv[])
             print_usage_and_exit();
     }
 
-    srand(time(0));
+    int tiles_per_row = level == HARD ? 8 : (level == MEDIUM ? 6 : 4);
+    int screen_size = tiles_per_row * ICON_SIZE;
     SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_SetVideoMode(screen_size, screen_size, SCREEN_BPP, SDL_SWSURFACE);
+    srand(time(0));
+    grid_t* grid = init_game_grid(level);
     atexit(SDL_Quit);
-    SDL_SetVideoMode(SCREEN_SIZE, SCREEN_SIZE, SCREEN_BPP, SDL_SWSURFACE);
     SDL_WM_SetCaption("Memory game", "Memory game");
     SDL_WM_SetIcon(load_image("icons/32/Chip 100_32x32-32.png"), NULL);
-
-    grid_t* grid = init_game_grid(level);
-
     SDL_Surface *screen = SDL_GetVideoSurface();
 
     int done = 0;
