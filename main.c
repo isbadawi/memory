@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
                         break;
                     int x = event.button.x;
                     int y = event.button.y;
-                    tile_t *clicked_tile = &grid->tiles[get_clicked_tile(x, y)];
+                    tile_t *clicked_tile = get_clicked_tile(grid, x, y);
                     if (clicked_tile->removed)
                         break;
                     if (previous_tile == NULL) {

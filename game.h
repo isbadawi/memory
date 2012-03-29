@@ -19,11 +19,12 @@ typedef struct {
 
 typedef struct {
     tile_t* tiles;
-    unsigned int size;
+    unsigned int num_tiles;
+    unsigned int tiles_per_row;
 } grid_t;
 
 grid_t* init_game_grid(difficulty_t level);
-int get_clicked_tile(int x, int y);
+tile_t* get_clicked_tile(grid_t* grid, int x, int y);
 void draw_grid(grid_t* grid, SDL_Surface* screen);
 
 #endif
