@@ -10,24 +10,39 @@
 #include "icons.h"
 
 tile_t* previous_tile;
+tile_t* clicked_tile;
 int wait;
 
-Uint32 remove_tiles(Uint32 interval, void *state) {
-    tile_t** s = (tile_t**)state;
-    s[0]->removed = 1;
-    s[1]->removed = 1;
+Uint32 remove_tiles(Uint32 interval, void *unused) {
+    previous_tile->removed = 1;
+    clicked_tile->removed = 1;
     wait = 0;
     previous_tile = NULL;
     return 0;
 }
 
-Uint32 resume_play(Uint32 interval, void *state) {
-    tile_t** s = (tile_t**)state;
-    s[0]->covered = 1;
-    s[1]->covered = 1;
+Uint32 resume_play(Uint32 interval, void *unused) {
+    previous_tile->covered = 1;
+    clicked_tile->covered = 1;
     wait = 0;
     previous_tile = NULL;
     return 0;
+}
+
+void on_tile_click(void) {
+    if (clicked_tile->removed)
+        return;
+    if (previous_tile == NULL) {
+        previous_tile = clicked_tile;
+        clicked_tile->covered = 0;
+    } else if (previous_tile != clicked_tile) {
+        clicked_tile->covered = 0;
+        wait = 1;
+        if (tiles_match(previous_tile, clicked_tile))
+            SDL_AddTimer(1000, remove_tiles, NULL);
+        else
+            SDL_AddTimer(1000, resume_play, NULL);
+    } 
 }
 
 void print_usage_and_exit(void) {
@@ -78,21 +93,8 @@ int main(int argc, char *argv[])
                         break;
                     int x = event.button.x;
                     int y = event.button.y;
-                    tile_t *clicked_tile = get_clicked_tile(grid, x, y);
-                    if (clicked_tile->removed)
-                        break;
-                    if (previous_tile == NULL) {
-                        previous_tile = clicked_tile;
-                        clicked_tile->covered = 0;
-                    } else if (previous_tile != clicked_tile) {
-                        clicked_tile->covered = 0;
-                        wait = 1;
-                        tile_t* s[2] = {previous_tile, clicked_tile};
-                        if (tiles_match(previous_tile, clicked_tile))
-                            SDL_AddTimer(1000, remove_tiles, s);
-                        else
-                            SDL_AddTimer(1000, resume_play, s);
-                    } 
+                    clicked_tile = get_clicked_tile(grid, x, y);
+                    on_tile_click();
                 }
                 break;
             }
