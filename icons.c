@@ -39,14 +39,14 @@ SDL_Surface **load_images(void) {
     return result;
 }
 
-void draw(Tile* t, SDL_Surface* dest) {
+void draw(tile_t* t, SDL_Surface* dest) {
     SDL_Rect offset;
     offset.x = t->x;
     offset.y = t->y;
     SDL_BlitSurface(t->icon, NULL, dest, &offset);
 }
 
-void draw_cover(Tile* t, SDL_Surface* dest) {
+void draw_cover(tile_t* t, SDL_Surface* dest) {
     Uint32 orange = SDL_MapRGB(dest->format, 255, 165, 0);
     Uint32 indian_red = SDL_MapRGB(dest->format, 205, 92, 92);
     SDL_Rect offset;

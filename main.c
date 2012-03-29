@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 #include<time.h>
 #include<SDL/SDL.h>
 #include<SDL/SDL_image.h>
@@ -8,11 +9,11 @@
 #include "game.h"
 #include "icons.h"
 
-Tile* previous_tile;
+tile_t* previous_tile;
 int wait;
 
 Uint32 remove_tiles(Uint32 interval, void *state) {
-    Tile** s = (Tile**)state;
+    tile_t** s = (tile_t**)state;
     s[0]->removed = 1;
     s[1]->removed = 1;
     wait = 0;
@@ -21,7 +22,7 @@ Uint32 remove_tiles(Uint32 interval, void *state) {
 }
 
 Uint32 resume_play(Uint32 interval, void *state) {
-    Tile** s = (Tile**)state;
+    tile_t** s = (tile_t**)state;
     s[0]->covered = 1;
     s[1]->covered = 1;
     wait = 0;
@@ -29,8 +30,27 @@ Uint32 resume_play(Uint32 interval, void *state) {
     return 0;
 }
 
+void print_usage_and_exit(void) {
+    puts("usage: memory [easy|medium|hard]");
+    exit(0);
+}
+
 int main(int argc, char *argv[])
 {
+    if (argc > 2)
+        print_usage_and_exit();
+    difficulty_t level = MEDIUM;
+    if (argc == 2) {
+        if (!strcmp(argv[1], "easy"))
+            level = EASY;
+        else if (!strcmp(argv[1], "medium"))
+            level = MEDIUM;
+        else if (!strcmp(argv[1], "hard"))
+            level = HARD;
+        else 
+            print_usage_and_exit();
+    }
+
     srand(time(0));
     SDL_Init(SDL_INIT_EVERYTHING);
     atexit(SDL_Quit);
@@ -38,10 +58,9 @@ int main(int argc, char *argv[])
     SDL_WM_SetCaption("Memory game", "Memory game");
     SDL_WM_SetIcon(load_image("icons/32/Chip 100_32x32-32.png"), NULL);
 
-    Tile* grid = init_game_grid();
+    grid_t* grid = init_game_grid(level);
 
     SDL_Surface *screen = SDL_GetVideoSurface();
-    Uint32 WHITE = SDL_MapRGB(screen->format, 255, 255, 255);
 
     int done = 0;
     wait = 0;
@@ -59,7 +78,7 @@ int main(int argc, char *argv[])
                         break;
                     int x = event.button.x;
                     int y = event.button.y;
-                    Tile *clicked_tile = &grid[get_clicked_tile(x, y)];
+                    tile_t *clicked_tile = &grid->tiles[get_clicked_tile(x, y)];
                     if (clicked_tile->removed)
                         break;
                     if (previous_tile == NULL) {
@@ -68,7 +87,7 @@ int main(int argc, char *argv[])
                     } else if (previous_tile != clicked_tile) {
                         clicked_tile->covered = 0;
                         wait = 1;
-                        Tile* s[2] = {previous_tile, clicked_tile};
+                        tile_t* s[2] = {previous_tile, clicked_tile};
                         if (tiles_match(previous_tile, clicked_tile))
                             SDL_AddTimer(1000, remove_tiles, s);
                         else
@@ -78,16 +97,7 @@ int main(int argc, char *argv[])
                 break;
             }
         }
-        SDL_FillRect(screen, NULL, WHITE);
-        int i;
-        for (i = 0; i < NUM_ICONS * 2; ++i) {
-            if (grid[i].removed)
-                continue;
-            if (grid[i].covered) 
-                draw_cover(grid + i, screen);
-            else
-                draw(grid + i, screen);
-        }
+        draw_grid(grid, screen);
         SDL_Flip(screen);
     }
 }
