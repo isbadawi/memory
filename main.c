@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     grid_t* grid = init_game_grid(level);
     atexit(SDL_Quit);
     SDL_WM_SetCaption("Memory game", "Memory game");
-    SDL_WM_SetIcon(load_image("icons/32/Chip 100_32x32-32.png"), NULL);
+    SDL_WM_SetIcon(load_image("icons/Chip 100_32x32-32.png"), NULL);
     SDL_Surface *screen = SDL_GetVideoSurface();
 
     int done = 0;
