@@ -66,6 +66,14 @@ int main(int argc, char *argv[])
             print_usage_and_exit();
     }
 
+    /* TODO: Fix this situation:
+       Need to pass a screen size to SDL_SetVideoMode.
+       Screen size depends on the number of tiles (i.e. difficulty level).
+       This is figured out in init_game_grid.
+       init_game_grid also loads the tile images, and calls
+       SDL_DisplayFormatAlpha, which expects SDL_SetVideoMode to have
+       been called already. So we repeat the logic here, which is bad.
+    */
     int tiles_per_row = level == HARD ? 8 : (level == MEDIUM ? 6 : 4);
     int screen_size = tiles_per_row * ICON_SIZE;
     SDL_Init(SDL_INIT_EVERYTHING);
