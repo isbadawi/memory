@@ -9,9 +9,7 @@ int randint(int low, int high) {
 } 
 
 grid_t* init_game_grid(difficulty_t level) {
-    int i;
     int row, col;
-    SDL_Surface **icons;
     grid_t* grid = malloc(sizeof(*grid));
     switch (level) {
         case EASY:
@@ -27,16 +25,8 @@ grid_t* init_game_grid(difficulty_t level) {
             grid->tiles_per_row = 8;
             break;
     }
-    icons = load_images(grid->num_tiles / 2);
     grid->tiles = malloc(grid->num_tiles * sizeof(*(grid->tiles)));
-    for (i = 0; i < grid->num_tiles/2; ++i)
-        grid->tiles[i].icon = grid->tiles[i+grid->num_tiles/2].icon = icons[i];
-    for (i = grid->num_tiles - 1; i > 0; --i) {
-        int j = randint(0, i);
-        tile_t temp = grid->tiles[j];
-        grid->tiles[j] = grid->tiles[i];
-        grid->tiles[i] = temp;
-    }
+
     for (row = 0; row < grid->tiles_per_row; ++row)
         for (col = 0; col < grid->tiles_per_row; ++col) {
             int index = row * grid->tiles_per_row + col;
@@ -46,8 +36,23 @@ grid_t* init_game_grid(difficulty_t level) {
             grid->tiles[index].y = row * ICON_SIZE;
         }
 
-    free(icons);
     return grid;
+}
+
+void load_icons(grid_t* grid) {
+    SDL_Surface** icons = load_images(grid->num_tiles / 2);
+    int i;
+    for (i = 0; i < grid->num_tiles / 2; ++i) {
+        grid->tiles[i].icon = icons[i];
+        grid->tiles[i + grid->num_tiles / 2].icon = icons[i];
+    }
+    for (i = grid->num_tiles - 1; i > 0; --i) {
+        int j = randint(0, i);
+        SDL_Surface* temp = grid->tiles[j].icon;
+        grid->tiles[j].icon = grid->tiles[i].icon;
+        grid->tiles[i].icon = temp;
+    } 
+    free(icons);
 }
 
 tile_t* get_clicked_tile(grid_t* grid, int x, int y) {
