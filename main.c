@@ -11,12 +11,12 @@
 
 tile_t* previous_tile;
 tile_t* clicked_tile;
-int wait;
+int waiting;
 
 Uint32 remove_tiles(Uint32 interval, void *unused) {
     previous_tile->removed = 1;
     clicked_tile->removed = 1;
-    wait = 0;
+    waiting = 0;
     previous_tile = NULL;
     return 0;
 }
@@ -24,7 +24,7 @@ Uint32 remove_tiles(Uint32 interval, void *unused) {
 Uint32 resume_play(Uint32 interval, void *unused) {
     previous_tile->covered = 1;
     clicked_tile->covered = 1;
-    wait = 0;
+    waiting = 0;
     previous_tile = NULL;
     return 0;
 }
@@ -37,7 +37,7 @@ void on_tile_click(void) {
         clicked_tile->covered = 0;
     } else if (previous_tile != clicked_tile) {
         clicked_tile->covered = 0;
-        wait = 1;
+        waiting = 1;
         if (tiles_match(previous_tile, clicked_tile))
             SDL_AddTimer(1000, remove_tiles, NULL);
         else
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     SDL_Surface *screen = SDL_GetVideoSurface();
 
     int done = 0;
-    wait = 0;
+    waiting = 0;
     SDL_Event event;
     previous_tile = NULL;
     while (!done) {
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 if (event.button.button == SDL_BUTTON_LEFT) {
-                    if (wait)
+                    if (waiting)
                         break;
                     int x = event.button.x;
                     int y = event.button.y;
