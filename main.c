@@ -103,4 +103,5 @@ int main(int argc, char *argv[])
         draw_grid(grid, screen);
         SDL_Flip(screen);
     }
+    return 0;
 }

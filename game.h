@@ -26,5 +26,7 @@ typedef struct {
 grid_t* init_game_grid(difficulty_t level);
 tile_t* get_clicked_tile(grid_t* grid, int x, int y);
 void draw_grid(grid_t* grid, SDL_Surface* screen);
+int tiles_match(tile_t* t1, tile_t* t2);
+void load_icons(grid_t* grid);
 
 #endif
