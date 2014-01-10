@@ -1,7 +1,7 @@
 #ifndef __game_h
 #define __game_h
 
-#include<SDL/SDL.h>
+#include "ui.h"
 
 typedef enum {
     EASY,
@@ -14,7 +14,7 @@ typedef struct {
     int y;
     int covered;
     int removed;
-    SDL_Surface* icon;
+    ui_icon icon;
 } tile_t;
 
 typedef struct {
@@ -25,8 +25,12 @@ typedef struct {
 
 grid_t* init_game_grid(difficulty_t level);
 tile_t* get_clicked_tile(grid_t* grid, int x, int y);
-void draw_grid(grid_t* grid, SDL_Surface* screen);
-int tiles_match(tile_t* t1, tile_t* t2);
 void load_icons(grid_t* grid);
+int tiles_match(tile_t* t1, tile_t* t2);
+ 
+/* These are declared here to avoid circular includes. */
+void ui_draw_tile(tile_t* t);
+void ui_draw_covered_tile(tile_t* t);
+void ui_draw_grid(grid_t* grid);
 
 #endif

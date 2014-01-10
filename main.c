@@ -3,11 +3,10 @@
 #include<string.h>
 #include<time.h>
 #include<SDL/SDL.h>
-#include<SDL/SDL_image.h>
 
 #include "constants.h"
 #include "game.h"
-#include "icons.h"
+#include "ui.h"
 
 tile_t* previous_tile;
 tile_t* clicked_tile;
@@ -38,10 +37,11 @@ void on_tile_click(void) {
     } else if (previous_tile != clicked_tile) {
         clicked_tile->covered = 0;
         waiting = 1;
-        if (tiles_match(previous_tile, clicked_tile))
+        if (tiles_match(previous_tile, clicked_tile)) {
             SDL_AddTimer(1000, remove_tiles, NULL);
-        else
+        } else {
             SDL_AddTimer(1000, resume_play, NULL);
+        }
     } 
 }
 
@@ -52,31 +52,27 @@ void print_usage_and_exit(void) {
 
 int main(int argc, char *argv[])
 {
-    if (argc > 2)
+    if (argc > 2) {
         print_usage_and_exit();
+    }
     difficulty_t level = MEDIUM;
     if (argc == 2) {
-        if (!strcmp(argv[1], "easy"))
+        if (!strcmp(argv[1], "easy")) {
             level = EASY;
-        else if (!strcmp(argv[1], "medium"))
+        } else if (!strcmp(argv[1], "medium")) {
             level = MEDIUM;
-        else if (!strcmp(argv[1], "hard"))
+        } else if (!strcmp(argv[1], "hard")) {
             level = HARD;
-        else 
+        } else {
             print_usage_and_exit();
+        }
     }
 
     grid_t* grid = init_game_grid(level);
-    int screen_size = grid->tiles_per_row * ICON_SIZE;
-    SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_SetVideoMode(screen_size, screen_size, SCREEN_BPP, SDL_SWSURFACE);
+    ui_init(grid->tiles_per_row * ICON_SIZE);
     load_icons(grid);
 
     srand(time(0));
-    atexit(SDL_Quit);
-    SDL_WM_SetCaption("Memory game", "Memory game");
-    SDL_WM_SetIcon(load_image("icons/Chip 100_32x32-32.png"), NULL);
-    SDL_Surface *screen = SDL_GetVideoSurface();
 
     int done = 0;
     waiting = 0;
@@ -90,8 +86,9 @@ int main(int argc, char *argv[])
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 if (event.button.button == SDL_BUTTON_LEFT) {
-                    if (waiting)
+                    if (waiting) {
                         break;
+                    }
                     int x = event.button.x;
                     int y = event.button.y;
                     clicked_tile = get_clicked_tile(grid, x, y);
@@ -100,8 +97,9 @@ int main(int argc, char *argv[])
                 break;
             }
         }
-        draw_grid(grid, screen);
-        SDL_Flip(screen);
+        ui_draw_grid(grid);
+        ui_render();
     }
+    ui_destroy();
     return 0;
 }

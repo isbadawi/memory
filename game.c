@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include "game.h"
 #include "constants.h"
-#include "icons.h"
+#include "ui.h"
 
 int randint(int low, int high) {
     return rand() % (high - low) + low;
@@ -40,7 +40,7 @@ grid_t* init_game_grid(difficulty_t level) {
 }
 
 void load_icons(grid_t* grid) {
-    SDL_Surface** icons = load_images(grid->num_tiles / 2);
+    ui_icon* icons = ui_load_icons(grid->num_tiles / 2);
     int i;
     for (i = 0; i < grid->num_tiles / 2; ++i) {
         grid->tiles[i].icon = icons[i];
@@ -48,7 +48,7 @@ void load_icons(grid_t* grid) {
     }
     for (i = grid->num_tiles - 1; i > 0; --i) {
         int j = randint(0, i);
-        SDL_Surface* temp = grid->tiles[j].icon;
+        ui_icon temp = grid->tiles[j].icon;
         grid->tiles[j].icon = grid->tiles[i].icon;
         grid->tiles[i].icon = temp;
     } 
@@ -62,19 +62,5 @@ tile_t* get_clicked_tile(grid_t* grid, int x, int y) {
 }
 
 int tiles_match(tile_t *t1, tile_t *t2) {
-    return t1->icon == t2->icon;
-}
-
-void draw_grid(grid_t* grid, SDL_Surface* screen) {
-    Uint32 WHITE = SDL_MapRGB(screen->format, 255, 255, 255);
-    int i;
-    SDL_FillRect(screen, NULL, WHITE);
-    for (i = 0; i < grid->num_tiles; ++i) {
-        if (grid->tiles[i].removed)
-            continue;
-        if (grid->tiles[i].covered) 
-            draw_cover(grid->tiles + i, screen);
-        else
-            draw(grid->tiles + i, screen);
-    }  
+    return ui_icons_equal(t1->icon, t2->icon);
 }
