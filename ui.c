@@ -6,7 +6,7 @@
 #include <SDL/SDL_image.h>
 
 int ui_init(int screen_size) {
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
         return -1;
     }
     if (SDL_SetVideoMode(screen_size, screen_size, SCREEN_BPP, SDL_SWSURFACE) == NULL) {
