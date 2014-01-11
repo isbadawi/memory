@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     int done = 0;
     waiting = 0;
     previous_tile = NULL;
-    ui_event event;
+    ui_event_t event;
     while (!done) {
         while (ui_poll_event(&event)) {
             switch (event.type) {

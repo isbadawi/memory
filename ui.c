@@ -20,37 +20,37 @@ void ui_destroy(void) {
     SDL_Quit();
 }
 
-void ui_fill_screen(ui_color color) {
+void ui_fill_screen(ui_color_t color) {
     SDL_Surface* screen = SDL_GetVideoSurface();
     Uint32 sdl_color = SDL_MapRGB(screen->format, color.r, color.g, color.b);
     SDL_FillRect(screen, NULL, sdl_color);
 }
 
-void ui_draw_square(ui_color color, int x, int y, int side) {
+void ui_draw_square(ui_color_t color, int x, int y, int side) {
     SDL_Surface* screen = SDL_GetVideoSurface();
     Uint32 sdl_color = SDL_MapRGB(screen->format, color.r, color.g, color.b);
     SDL_Rect sdl_rect = {x, y, side, side};
     SDL_FillRect(screen, &sdl_rect, sdl_color);
 }
 
-void ui_draw_icon(ui_icon icon, int x, int y) {
+void ui_draw_icon(ui_icon_t icon, int x, int y) {
     SDL_Surface* screen = SDL_GetVideoSurface();
     SDL_Rect offset = {x, y, 0, 0};
     SDL_BlitSurface((SDL_Surface*) icon, NULL, screen, &offset);
 }
 
-ui_icon ui_load_icon(char *filename) {
+ui_icon_t ui_load_icon(char *filename) {
     SDL_Surface* temp = IMG_Load(filename);
     if (temp == NULL) {
         return NULL;
     }
-    return (ui_icon) temp;
+    return (ui_icon_t) temp;
 }
 
-ui_icon *ui_load_icons(int how_many) {
+ui_icon_t *ui_load_icons(int how_many) {
     char buffer[40];
     FILE* fp = fopen("icons.txt", "r");
-    ui_icon* result = malloc(how_many * sizeof(ui_icon));
+    ui_icon_t* result = malloc(how_many * sizeof(ui_icon_t));
     for (int i = 0; i < how_many; ++i) {
         fgets(buffer, 40, fp);
         buffer[strlen(buffer) - 1] = '\0';
@@ -59,7 +59,7 @@ ui_icon *ui_load_icons(int how_many) {
     return result;
 }
 
-int ui_icons_equal(ui_icon i1, ui_icon i2) {
+int ui_icons_equal(ui_icon_t i1, ui_icon_t i2) {
     return i1 == i2;
 }
 
@@ -68,14 +68,14 @@ void ui_draw_tile(tile_t* t) {
 }
 
 void ui_draw_covered_tile(tile_t* t) {
-    ui_color orange = {255, 165, 0};
-    ui_color indian_red = {205, 92, 92};
+    ui_color_t orange = {255, 165, 0};
+    ui_color_t indian_red = {205, 92, 92};
     ui_draw_square(orange, t->x, t->y, ICON_SIZE);
     ui_draw_square(indian_red, t->x + 1, t->y + 1, ICON_SIZE);
 }
 
 void ui_draw_grid(grid_t* grid) {
-    ui_color white = {255, 255, 255};
+    ui_color_t white = {255, 255, 255};
     ui_fill_screen(white);
     for (int i = 0; i < grid->num_tiles; ++i) {
         if (grid->tiles[i].removed) {
@@ -93,7 +93,7 @@ void ui_render(void) {
     SDL_Flip(SDL_GetVideoSurface());
 }
 
-int ui_poll_event(ui_event* event) {
+int ui_poll_event(ui_event_t* event) {
     SDL_Event sdl_event;
     if (!SDL_PollEvent(&sdl_event)) {
         return 0;

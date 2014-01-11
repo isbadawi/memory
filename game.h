@@ -14,7 +14,7 @@ typedef struct {
     int y;
     int covered;
     int removed;
-    ui_icon icon;
+    ui_icon_t icon;
 } tile_t;
 
 typedef struct {
