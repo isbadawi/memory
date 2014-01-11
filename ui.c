@@ -92,3 +92,23 @@ void ui_draw_grid(grid_t* grid) {
 void ui_render(void) {
     SDL_Flip(SDL_GetVideoSurface());
 }
+
+int ui_poll_event(ui_event* event) {
+    SDL_Event sdl_event;
+    if (!SDL_PollEvent(&sdl_event)) {
+        return 0;
+    }
+    switch (sdl_event.type) {
+    case SDL_QUIT:
+        event->type = ui_event_quit;
+        return 1;
+    case SDL_MOUSEBUTTONDOWN:
+        if (sdl_event.button.button == SDL_BUTTON_LEFT) {
+            event->type = ui_event_click;
+            event->click.x = sdl_event.button.x;
+            event->click.y = sdl_event.button.y;
+        }
+        return 1;
+    }
+    return ui_poll_event(event);
+}

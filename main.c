@@ -76,24 +76,22 @@ int main(int argc, char *argv[])
 
     int done = 0;
     waiting = 0;
-    SDL_Event event;
     previous_tile = NULL;
+    ui_event event;
     while (!done) {
-        while (SDL_PollEvent(&event)) {
+        while (ui_poll_event(&event)) {
             switch (event.type) {
-            case SDL_QUIT:
+            case ui_event_quit:
                 done = 1;
                 break;
-            case SDL_MOUSEBUTTONDOWN:
-                if (event.button.button == SDL_BUTTON_LEFT) {
-                    if (waiting) {
-                        break;
-                    }
-                    int x = event.button.x;
-                    int y = event.button.y;
-                    clicked_tile = get_clicked_tile(grid, x, y);
-                    on_tile_click();
+            case ui_event_click:
+                if (waiting) {
+                    break;
                 }
+                int x = event.click.x;
+                int y = event.click.y;
+                clicked_tile = get_clicked_tile(grid, x, y);
+                on_tile_click();
                 break;
             }
         }

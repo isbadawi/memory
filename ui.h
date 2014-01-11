@@ -7,6 +7,22 @@ typedef struct {
     uint8_t r, g, b;
 } ui_color;
 
+typedef enum {
+    ui_event_quit,
+    ui_event_click
+} ui_event_type;
+
+typedef struct {
+    ui_event_type type;
+    int x;
+    int y;
+} ui_click_event;
+
+typedef union {
+    ui_event_type type;
+    ui_click_event click;
+} ui_event;
+
 typedef void* ui_icon;
 
 int ui_init();
@@ -20,5 +36,7 @@ void ui_draw_square(ui_color color, int x, int y, int side);
 void ui_draw_icon(ui_icon icon, int x, int y);
 
 void ui_render(void);
+
+int ui_poll_event(ui_event* event);
 
 #endif
