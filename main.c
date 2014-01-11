@@ -2,6 +2,16 @@
 #include<stdlib.h>
 #include<string.h>
 #include<time.h>
+
+/* This include is necessary even though there are no
+ * references to SDL in this file. This is because SDL
+ * needs to perform some initialization, and it does this
+ * by renaming the app's main function (#define main SDL_main)
+ * and defining its own that eventually calls it.
+ *
+ * An alternative to including this would be to just change
+ * the definition of main to SDL_main. I'd rather keep the magic
+ * contained in the SDL header.  */
 #include<SDL/SDL.h>
 
 #include "constants.h"
@@ -12,20 +22,18 @@ tile_t* previous_tile;
 tile_t* clicked_tile;
 int waiting;
 
-Uint32 remove_tiles(Uint32 interval, void *unused) {
+void remove_tiles(void) {
     previous_tile->removed = 1;
     clicked_tile->removed = 1;
     waiting = 0;
     previous_tile = NULL;
-    return 0;
 }
 
-Uint32 resume_play(Uint32 interval, void *unused) {
+void resume_play(void) {
     previous_tile->covered = 1;
     clicked_tile->covered = 1;
     waiting = 0;
     previous_tile = NULL;
-    return 0;
 }
 
 void on_tile_click(void) {
@@ -38,9 +46,9 @@ void on_tile_click(void) {
         clicked_tile->covered = 0;
         waiting = 1;
         if (tiles_match(previous_tile, clicked_tile)) {
-            SDL_AddTimer(1000, remove_tiles, NULL);
+            ui_run_task_after(1 /* second */, remove_tiles);
         } else {
-            SDL_AddTimer(1000, resume_play, NULL);
+            ui_run_task_after(1 /* second */, resume_play);
         }
     } 
 }
@@ -50,8 +58,7 @@ void print_usage_and_exit(void) {
     exit(0);
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     if (argc > 2) {
         print_usage_and_exit();
     }

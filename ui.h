@@ -39,4 +39,7 @@ void ui_render(void);
 
 int ui_poll_event(ui_event_t* event);
 
+typedef void (ui_task_t) (void);
+void ui_run_task_after(int secs, ui_task_t* task);
+
 #endif

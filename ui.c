@@ -112,3 +112,14 @@ int ui_poll_event(ui_event_t* event) {
     }
     return ui_poll_event(event);
 }
+
+static Uint32 ui_task_wrapper_timer(Uint32 interval, void* param) {
+    ui_task_t* task = (ui_task_t*) param;
+    task();
+    return 0;
+}
+
+
+void ui_run_task_after(int secs, ui_task_t* task) {
+    SDL_AddTimer(secs * 1000, ui_task_wrapper_timer, (void*) task);
+}
