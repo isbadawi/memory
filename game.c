@@ -40,7 +40,7 @@ grid_t* init_game_grid(difficulty_t level) {
 }
 
 void load_icons(grid_t* grid) {
-    ui_icon* icons = ui_load_icons(grid->num_tiles / 2);
+    ui_icon_t* icons = ui_load_icons(grid->num_tiles / 2);
     int i;
     for (i = 0; i < grid->num_tiles / 2; ++i) {
         grid->tiles[i].icon = icons[i];
@@ -48,7 +48,7 @@ void load_icons(grid_t* grid) {
     }
     for (i = grid->num_tiles - 1; i > 0; --i) {
         int j = randint(0, i);
-        ui_icon temp = grid->tiles[j].icon;
+        ui_icon_t temp = grid->tiles[j].icon;
         grid->tiles[j].icon = grid->tiles[i].icon;
         grid->tiles[i].icon = temp;
     } 
